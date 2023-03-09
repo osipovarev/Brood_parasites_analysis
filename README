@@ -1,0 +1,7 @@
+## Get hte tree from OpenTree
+source ~/.bash_profile
+source ~/.bashrc
+
+python getFromOpenTree.py -j bp_birds_sci_names.json -c out.cites -t out.tre
+
+

@@ -1,0 +1,21 @@
+### Getting meaningful gene names for query isoforms from TOGA
+
+WDIR=/projects/hillerlab/genome/gbdb-HL/HLtaeGut5/TOGA/vs_HLvidMac2
+
+grep one2one orthology_classification.tsv | cut -f1,4 | s -u > one2one.query_isoforms.tsv
+grep one2many orthology_classification.tsv | cut -f1,3,4 | s -u > one2many.refGene.qGene.qTransc.tsv
+
+rename_duplicated_id_annotation.py -c 1 -a <(cut -f1,3 one2many.refGene.qGene.qTransc.tsv | awk '{print $2","$0}' > enum.one2many.refGene.qGene.tsv
+
+replace_names_from_dict.py -a <(cut -f2,3 one2many.refGene.qGene.qTransc.tsv) -d <(awk '{print $2","$0}' enum.one2many.refGene.qGene.tsv) -f 1 | cut -f1,3 > one2many.query_isoforms.tsv
+
+cat one2one.query_isoforms.tsv one2many.query_isoforms.tsv > named.query_isoforms.tsv
+
+# add the rest without names
+grep "many2one\|many2many" orthology_classification.tsv | cut -f3,4 | s -u >> named.query_isoforms.tsv
+
+
+# clean up
+rm enum.one2many.refGene.qGene.tsv one2many.* one2one*
+
+

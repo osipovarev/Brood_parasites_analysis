@@ -1,0 +1,7 @@
+##
+filter_annotation_with_list.py -c 1 -a mk.tsv -l <( awk '$5=="yes"{print $1}' transcript-counts.tsv) > longest.mk.vM_tG.tsv
+
+filter_annotation_with_list.py -c 1 -a mk.tsv -l <( awk '$5=="yes"{print $1}' transcript-counts.tsv) > longest.mk.vM_tG_pN.tsv
+
+
+
