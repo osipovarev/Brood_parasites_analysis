@@ -10,6 +10,9 @@ python getFromOpenTree.py -j bp_birds_sci_names.json -c out.cites -t out.tre
 MK=MK_test_indInd_group/gene.longest.mk.tsv
 
 # p-val<0.1; DoS>1; sorted by DoS
+
 awk '($7<0.1 && $9>0) {print $1"\t"$7"\t"$9}' $MK | sort -n -k3,3 -r | grep -v reg_ |  cut -f1
+
+for db in vidMac vidCha indInd; do MK=MK_test_${db}_ncbi/gene.longest.mk.tsv; awk '($7<0.1 && $9>0) {print $1"\t"$7"\t"$9}' $MK | sort -n -k3,3 -r | grep -v ^LOC | cut -f1 > MK_test_${db}_ncbi/pos.genes.pval_0.1.lst; done
 
 
