@@ -16,3 +16,8 @@ awk '($7<0.1 && $9>0) {print $1"\t"$7"\t"$9}' $MK | sort -n -k3,3 -r | grep -v r
 for db in vidMac vidCha indInd; do MK=MK_test_${db}_ncbi/gene.longest.mk.tsv; awk '($7<0.1 && $9>0) {print $1"\t"$7"\t"$9}' $MK | sort -n -k3,3 -r | grep -v ^LOC | cut -f1 > MK_test_${db}_ncbi/pos.genes.pval_0.1.lst; done
 
 
+### PCA honeyguide chr by chr
+
+for f in $(ls split_by_chr_PCA_indInd/*eigenvec); do renameToHLscaffolds.py -c 2 -a $f -d  <(awk '{print $1","$0}' snpArcher_QC/iInd.samples.dict) > $f.labled; done
+
+
