@@ -68,5 +68,37 @@ for (dos in c('pos', 'neg')) {
   write.table(enrich_result[enrich_result$pvalue < 0.01, ], row.names=F, quote=F, file=enrich_out_file, sep="\t")
 }
 
- 
+
+
+### KEGG enrichment and KEGG GSEA
+setwd('/Users/osipova/Documents/LabDocs/Brood_parasites_analysis/MK_test_indInd_ncbi/')
+file_name = 'gene.dos.test.tsv'
+gsea_out_file = 'out.gsea.kegg.test.tsv'
+enrich_out_file = 'out.enrich.kegg.test.tsv'
+
+gene_to_uniprot <- enframe(mapIds(org.Hs.eg.db, gene_dos$gene, 'ENTREZID', 'SYMBOL'), 'gene', 'uniprot')
+dos_uniprot <- na.omit(merge(gene_dos, gene_to_uniprot, by='gene')[, c('uniprot', 'effect')])
+dos_uniprot <- deframe(dos_uniprot[order(-dos_uniprot$effect), ])
+
+
+gse <- gseKEGG(geneList = dos_uniprot,
+               organism = "hsa",
+               exponent = 1,
+               eps = 1e-10,
+               pvalueCutoff  = 1,
+               minGSSize = 10,
+               maxGSSize = 500)
+
+
+enrich <- enrichKEGG(gene = names(dos_uniprot),
+                  organism = "hsa",
+                  pvalueCutoff  = 1,
+                  minGSSize = 10,
+                  maxGSSize = 500)
+
+gse_result = gse@result
+write.table(gse_result, row.names=F, quote=F, file=gsea_out_file, sep="\t")
+
+enrich_result = enrich@result
+write.table(enrich_result, row.names=F, quote=F, file=enrich_out_file, sep="\t")
 
