@@ -71,7 +71,9 @@ for (dos in c('pos', 'neg')) {
 
 
 ### KEGG enrichment and KEGG GSEA
-setwd('/Users/osipova/Documents/LabDocs/Brood_parasites_analysis/MK_test_indInd_ncbi/')
+# setwd('/Users/osipova/Documents/LabDocs/Brood_parasites_analysis/MK_test_indInd_ncbi/')
+db = 'vidMac'
+setwd(paste0('/Users/osipova/Documents/LabDocs/Brood_parasites_analysis/MK_test_', db, '_ncbi/'))
 file_name = 'gene.dos.test.tsv'
 gsea_out_file = 'out.gsea.kegg.test.tsv'
 enrich_out_file = 'out.enrich.kegg.test.tsv'
