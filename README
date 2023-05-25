@@ -24,3 +24,24 @@ for f in $(ls split_by_chr_PCA_indInd/*eigenvec); do renameToHLscaffolds.py -c 2
 for f in $(ls split_by_chr_PCA_indInd/*passed.indInd.pca.eigenvec.labeled); do scaffold=$(echo $f | grep -Eo "CM0[0-9]{5}" );  chr=$(grep $scaffold chroms.sizes | cut -f1); echo -e "mv split_by_chr_PCA_indInd/$scaffold.passed.indInd.pca.eigenvec.labeled split_by_chr_PCA_indInd/$chr.passed.indInd.pca.eigenvec.labeled"; done > rename.sh
 
 
+### Do window based PI and TajimaD for reagions with high LR in SweepFinder2
+## window = 100kb; step = 1000bp; coordinate of the interval = middle of the 10kb interval
+
+for db in indInd vidCha vidMac; \
+do \
+
+ ## copy
+ scp eosipova@boslogin01.rc.fas.harvard.edu://n/holylfs05/LABS/informatics/Lab/project-eosipova/Brood_parasites/$db/PopGen/high_SF2.$db.slide* PopGen_${db}/; \
+ 
+ ## rename PI; assign START to middle of an interval
+ renameToHLscaffolds.py -c 1 -a PopGen_${db}/high_SF2.$db.slide.windowed.pi -d <(awk '{print$2","$0}' PopGen_${db}/chrom.scaffold.dict.tsv) | awk '{$3=$3+($4-$3)/2; print }' > file; mv file PopGen_${db}/high_SF2.$db.slide.windowed.pi;
+
+ ## rename TajimaD; assign START to middle of an interval
+ renameToHLscaffolds.py -c 1 -a PopGen_${db}/high_SF2.$db.slide.TajimaD -d <(awk '{print$2","$0}' PopGen_${db}/chrom.scaffold.dict.tsv) |  awk '{$3=$3+($4-$3)/2; print }' > file; mv file PopGen_${db}/high_SF2.$db.slide.TajimaD; \
+
+done
+
+
+
+
+
