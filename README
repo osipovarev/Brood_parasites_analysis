@@ -1,11 +1,13 @@
-## Get hte tree from OpenTree
+
+### Get the tree from OpenTree
 source ~/.bash_profile
 source ~/.bashrc
 
 python getFromOpenTree.py -j bp_birds_sci_names.json -c out.cites -t out.tre
 
 
-## Filter and analize MK test results
+
+### Filter and analize MK test results
 
 MK=MK_test_indInd_group/gene.longest.mk.tsv
 
@@ -16,6 +18,36 @@ awk '($7<0.1 && $9>0) {print $1"\t"$7"\t"$9}' $MK | sort -n -k3,3 -r | grep -v r
 for db in vidMac vidCha indInd; do MK=MK_test_${db}_ncbi/gene.longest.mk.tsv; awk '($7<0.1 && $9>0) {print $1"\t"$7"\t"$9}' $MK | sort -n -k3,3 -r | grep -v ^LOC | cut -f1 > MK_test_${db}_ncbi/pos.genes.pval_0.1.lst; done
 
 
+### GSEA analysis of MK test results
+WDIR=$(pwd)
+for db in indInd vidCha vidMac; do cut -f1,9 MK_test_${db}_ncbi/gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/gene.dos.tsv; run_gsea_analysis.R -w $WDIR -g  MK_test_${db}_ncbi/gene.dos.tsv  -o MK_test_${db}_ncbi/gse.tsv; done
+
+
+### GO Enrichment analysis of MK test results
+WDIR=$(pwd)
+for db in indInd vidCha vidMac; do echo $db; run_goenrich_analysis.R -w $WDIR -g  MK_test_${db}_ncbi/gene.longest.mk.tsv -o MK_test_${db}_ncbi/ -p 0.05; done
+
+
+# make table for GO terms occuring at least in 2 clades
+for go in $(cat go_convergent_2clades.lst ); do description=$(grep -w $go MK_test_*_ncbi/pos.enrichGO.tsv | head -1 | cut -f1,2); vM=$(grep -w $go ./MK_test_vidMac_ncbi/pos.enrichGO.tsv | cut -f5); vC=$(grep -w $go ./MK_test_vidCha_ncbi/pos.enrichGO.tsv | cut -f5); iI=$(grep -w $go ./MK_test_indInd_ncbi/pos.enrichGO.tsv | cut -f5); echo -e "$description\t$vM\t$vC\t$iI"; done | awk -F":" '{print $2":"$3}' > go_convergent_2clades.tsv
+
+
+
+
+### Metascape Enrichment analysis of MK test reuslts - not interesting
+
+# DoS > 0
+for db in indInd vidCha vidMac; do echo $db; awk ' ($7<0.05 && $9>0) {print $1}' MK_test_${db}_ncbi/gene.longest.mk.tsv >   MK_test_${db}_ncbi/pos.genes.pval_0.05.txt ; done
+
+for db in indInd vidCha vidMac; do printf $db"\t"; cat MK_test_${db}_ncbi/pos.genes.pval_0.05.txt | tr '\n' ','; echo; done > Metascape_enrichment/for_metascape.pos.3_clades.pval_0.05.txt
+
+# DoS < 0
+for db in indInd vidCha vidMac; do echo $db; awk ' ($7<0.05 && $9<0) {print $1}' MK_test_${db}_ncbi/gene.longest.mk.tsv >   MK_test_${db}_ncbi/neg.genes.pval_0.05.txt ; done
+
+for db in indInd vidCha vidMac; do printf $db"\t"; cat MK_test_${db}_ncbi/neg.genes.pval_0.05.txt | tr '\n' ','; echo; done > Metascape_enrichment/for_metascape.neg.3_clades.pval_0.05.txt
+
+
+
 ### PCA honeyguide chr by chr
 
 for f in $(ls split_by_chr_PCA_indInd/*eigenvec); do renameToHLscaffolds.py -c 2 -a $f -d  <(awk '{print $1","$0}' snpArcher_QC/iInd.samples.dict) > $f.labeled; done
@@ -24,7 +56,11 @@ for f in $(ls split_by_chr_PCA_indInd/*eigenvec); do renameToHLscaffolds.py -c 2
 for f in $(ls split_by_chr_PCA_indInd/*passed.indInd.pca.eigenvec.labeled); do scaffold=$(echo $f | grep -Eo "CM0[0-9]{5}" );  chr=$(grep $scaffold chroms.sizes | cut -f1); echo -e "mv split_by_chr_PCA_indInd/$scaffold.passed.indInd.pca.eigenvec.labeled split_by_chr_PCA_indInd/$chr.passed.indInd.pca.eigenvec.labeled"; done > rename.sh
 
 
+
+
+
 ### Do window based PI and TajimaD for reagions with high LR in SweepFinder2
+
 ## window = 100kb; step = 1000bp; coordinate of the interval = middle of the 10kb interval
 
 for db in indInd vidCha vidMac; \
