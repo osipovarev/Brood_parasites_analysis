@@ -48,6 +48,13 @@ for db in indInd vidCha vidMac; do printf $db"\t"; cat MK_test_${db}_ncbi/neg.ge
 
 
 
+### Lists of genes of specific GO terms to check TajimaD and AF
+for db in vidMac vidCha indInd; do for f in $(find MK_test_${db}_ncbi/ -name "*_genes.$db.lst"); do i=$(echo $f |awk -F"/" '{print $3}' |cut -d. -f1); awk -v v1=$db -v v2=$i '{print v1"\t"v2"\t"$0}' $f; done; done > all_genes.go_terms.mk_test.tsv
+
+
+
+
+
 ### PCA honeyguide chr by chr
 
 for f in $(ls split_by_chr_PCA_indInd/*eigenvec); do renameToHLscaffolds.py -c 2 -a $f -d  <(awk '{print $1","$0}' snpArcher_QC/iInd.samples.dict) > $f.labeled; done
