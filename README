@@ -20,12 +20,12 @@ for db in vidMac vidCha indInd; do MK=MK_test_${db}_ncbi/gene.longest.mk.tsv; aw
 
 ### GSEA analysis of MK test results
 WDIR=$(pwd)
-for db in indInd vidCha vidMac; do cut -f1,9 MK_test_${db}_ncbi/gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/gene.dos.tsv; run_gsea_analysis.R -w $WDIR -g  MK_test_${db}_ncbi/gene.dos.tsv  -o MK_test_${db}_ncbi/gse.tsv; done
+for db in indInd vidCha vidMac; do cut -f1,17 MK_test_${db}_ncbi/extended.af.gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/impMKT/gene.dos.tsv; run_gsea_analysis.R -w $WDIR -g  MK_test_${db}_ncbi/impMKT/gene.dos.tsv  -o MK_test_${db}_ncbi/impMKT/gse.tsv -t MK_test_${db}_ncbi/extended.af.gene.longest.mk.tsv; done
 
 
 ### GO Enrichment analysis of MK test results
 WDIR=$(pwd)
-for db in indInd vidCha vidMac; do echo $db; run_goenrich_analysis.R -w $WDIR -g  MK_test_${db}_ncbi/gene.longest.mk.tsv -o MK_test_${db}_ncbi/ -p 0.05; done
+for db in indInd vidCha vidMac; do echo $db; run_goenrich_analysis.R -w $WDIR -g  MK_test_${db}_ncbi/extended.af.gene.longest.mk.tsv -o MK_test_${db}_ncbi/impMKT/ -p 0.05; done
 
 
 # make table for GO terms occuring at least in 2 clades
