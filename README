@@ -85,6 +85,16 @@ do \
 done
 
 
+###############################
+
+### OXPHOS genes analysis ####
+
+for db in vidMac vidCha anoImb indInd molAte agePho; do grep $db all_bp.oxphos.toga_ncbi.tsv | cut -f2- > MK_test_${db}_ncbi/oxphos.toga_ncbi.tsv; done
+
+for db in vidMac vidCha anoImb indInd molAte agePho; do renameToHLscaffolds.py -c 1 -a MK_test_${db}_ncbi/oxphos.toga_ncbi.dos.tsv -d <(cut -f1,5 OXPHOS_gene_list.tsv | sed "s/\.[0-9]*\t/\t/" | awk '{print $1","$2"\t"$1}') > MK_test_${db}_ncbi/gene.oxphos.toga_ncbi.tsv; done
+
+for db in vidMac vidCha anoImb indInd molAte agePho; do awk -v var=$db '{print var"\t"$0 }' MK_test_${db}_ncbi/gene.oxphos.toga_ncbi.tsv; done > all_bp.gene.oxphos.toga_ncbi.tsv
+
 
 
 
