@@ -1,0 +1,12 @@
+julia -p 24
+
+using MKtest
+
+adap = MKtest.parameters(N=20, dac=[1,2,3,4,5,8,12,16,20])
+alpha,sfs,divergence = MKtest.parse_sfs(adap,data="for_abc.oxphos.mk.anoImb.tsv")
+
+df = MKtest.rates(adap,gH=[200,2000],gL=[1,10],gam_dfe=[-2000,-200],gam_flanking=[-1000,-500],iterations = 10^5,output_file="rates.bjld2");
+
+df = MKtest.summary_statistics(adap,sfs, divergence, h5_file="rates.bjld2", summstat_size=10^5, output_folder="./");
+
+posteriors = MKtest.ABCreg(S=size(adap.dac, 1),tol=0.025,abcreg="/n/holylfs05/LABS/informatics/Lab/project-eosipova/Scripts/ABCreg/src/reg", output_folder="./")
