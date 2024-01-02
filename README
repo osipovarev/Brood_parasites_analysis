@@ -118,4 +118,11 @@ for db in vidMac vidCha anoImb; do for g in $(cut -f4 autosomal_control_gene_lis
 
 
 
+#######################
+
+### SweepFinder2 peaks overlapping low PI: GO enrichement
+
+ for db in vidMac vidCha indInd molAte agePho picPub anoImb; do echo $db; goenrich_genelist.R -w $WDIR -g PopGen_${db}/genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst -o  PopGen_${db}/SF2.go_enrich.1Mb_domain.tsv -u PopGen_${db}/genes.ncbi.lst; done
+
+
 
