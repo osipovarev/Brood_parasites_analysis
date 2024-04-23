@@ -1,5 +1,5 @@
 
-### Get the tree from OpenTree
+## Get the tree from OpenTree
 source ~/.bash_profile
 source ~/.bashrc
 
@@ -7,74 +7,60 @@ python getFromOpenTree.py -j bp_birds_sci_names.json -c out.cites -t out.tre
 
 
 
-### Filter and analize MK test results
-
-MK=MK_test_indInd_group/gene.longest.mk.tsv
-
-# p-val<0.1; DoS>1; sorted by DoS
-
-awk '($7<0.1 && $9>0) {print $1"\t"$7"\t"$9}' $MK | sort -n -k3,3 -r | grep -v reg_ |  cut -f1
-
-for db in vidMac vidCha indInd; do MK=MK_test_${db}_ncbi/gene.longest.mk.tsv; awk '($7<0.1 && $9>0) {print $1"\t"$7"\t"$9}' $MK | sort -n -k3,3 -r | grep -v ^LOC | cut -f1 > MK_test_${db}_ncbi/pos.genes.pval_0.1.lst; done
+## Filter and analize MK test results
 
 
 ### GSEA analysis of MK test results
+```
 WDIR=$(pwd)
 for db in indInd vidCha vidMac; do cut -f1,17 MK_test_${db}_ncbi/extended.af.gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/impMKT/gene.dos.tsv; run_gsea_analysis.R -w $WDIR -g  MK_test_${db}_ncbi/impMKT/gene.dos.tsv  -o MK_test_${db}_ncbi/impMKT/gse.tsv -t MK_test_${db}_ncbi/extended.af.gene.longest.mk.tsv; done
-
+```
 
 ### GO Enrichment analysis of MK test results
-WDIR=$(pwd)
-for db in indInd vidCha vidMac; do echo $db; run_goenrich_analysis.R -w $WDIR -g  MK_test_${db}_ncbi/imp.gene.longest.mk.tsv -o MK_test_${db}_ncbi/impMKT/ -p 0.01; done
-
+```
+for db in indInd vidCha vidMac; \
+do \
+	echo $db; \
+	run_goenrich_analysis.R -w $(pwd) -g  MK_test_${db}_ncbi/imp.gene.longest.mk.tsv -o MK_test_${db}_ncbi/impMKT/ -p 0.01; \
+done
+```
 
 ### GO enrich and GSEA for imputed MKT
-for db in vidCha vidMac agePho molAte picPub; do echo $db; cut -f1,12 MK_test_${db}_ncbi/imp.gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/impMKT/gene.dos.tsv; run_gsea_analysis.R -w $WDIR -g  MK_test_${db}_ncbi/impMKT/gene.dos.tsv  -o MK_test_${db}_ncbi/impMKT/gse.tsv -t MK_test_${db}_ncbi/imp.gene.longest.mk.tsv; run_goenrich_analysis.R -w $WDIR -g  MK_test_${db}_ncbi/imp.gene.longest.mk.tsv -o MK_test_${db}_ncbi/impMKT/ -p 0.05; done
+```
+for db in vidCha vidMac agePho molAte picPub; \
+do \
+	echo $db; \
+	cut -f1,12 MK_test_${db}_ncbi/imp.gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/impMKT/gene.dos.tsv; \
+	run_gsea_analysis.R -w $(pwd) -g  MK_test_${db}_ncbi/impMKT/gene.dos.tsv  -o MK_test_${db}_ncbi/impMKT/gse.tsv -t MK_test_${db}_ncbi/imp.gene.longest.mk.tsv; \
+	run_goenrich_analysis.R -w $(pwd) -g  MK_test_${db}_ncbi/imp.gene.longest.mk.tsv -o MK_test_${db}_ncbi/impMKT/ -p 0.05; \
+done
+```
 
 
-
-# make table for GO terms occuring at least in 2 clades
+### make table for GO terms occuring at least in 2 clades
+```
 for go in $(cat go_convergent_2clades.lst ); do description=$(grep -w $go MK_test_*_ncbi/pos.enrichGO.tsv | head -1 | cut -f1,2); vM=$(grep -w $go ./MK_test_vidMac_ncbi/pos.enrichGO.tsv | cut -f5); vC=$(grep -w $go ./MK_test_vidCha_ncbi/pos.enrichGO.tsv | cut -f5); iI=$(grep -w $go ./MK_test_indInd_ncbi/pos.enrichGO.tsv | cut -f5); echo -e "$description\t$vM\t$vC\t$iI"; done | awk -F":" '{print $2":"$3}' > go_convergent_2clades.tsv
+```
 
 
 
 
-### Metascape Enrichment analysis of MK test reuslts - not interesting
-
-# DoS > 0
-for db in indInd vidCha vidMac; do echo $db; awk ' ($7<0.05 && $9>0) {print $1}' MK_test_${db}_ncbi/gene.longest.mk.tsv >   MK_test_${db}_ncbi/pos.genes.pval_0.05.txt ; done
-
-for db in indInd vidCha vidMac; do printf $db"\t"; cat MK_test_${db}_ncbi/pos.genes.pval_0.05.txt | tr '\n' ','; echo; done > Metascape_enrichment/for_metascape.pos.3_clades.pval_0.05.txt
-
-# DoS < 0
-for db in indInd vidCha vidMac; do echo $db; awk ' ($7<0.05 && $9<0) {print $1}' MK_test_${db}_ncbi/gene.longest.mk.tsv >   MK_test_${db}_ncbi/neg.genes.pval_0.05.txt ; done
-
-for db in indInd vidCha vidMac; do printf $db"\t"; cat MK_test_${db}_ncbi/neg.genes.pval_0.05.txt | tr '\n' ','; echo; done > Metascape_enrichment/for_metascape.neg.3_clades.pval_0.05.txt
-
-
-
-### Lists of genes of specific GO terms to check TajimaD and AF
-for db in vidMac vidCha indInd; do for f in $(find MK_test_${db}_ncbi/ -name "*_genes.$db.lst"); do i=$(echo $f |awk -F"/" '{print $3}' |cut -d. -f1); awk -v v1=$db -v v2=$i '{print v1"\t"v2"\t"$0}' $f; done; done > all_genes.go_terms.mk_test.tsv
-
-
-
-
-
-### PCA honeyguide chr by chr
-
+## PCA honeyguide chr by chr
+```
 for f in $(ls split_by_chr_PCA_indInd/*eigenvec); do renameToHLscaffolds.py -c 2 -a $f -d  <(awk '{print $1","$0}' snpArcher_QC/iInd.samples.dict) > $f.labeled; done
-
-## rename scaffolds to chromosomes
+```
+### rename scaffolds to chromosoms
+```
 for f in $(ls split_by_chr_PCA_indInd/*passed.indInd.pca.eigenvec.labeled); do scaffold=$(echo $f | grep -Eo "CM0[0-9]{5}" );  chr=$(grep $scaffold chroms.sizes | cut -f1); echo -e "mv split_by_chr_PCA_indInd/$scaffold.passed.indInd.pca.eigenvec.labeled split_by_chr_PCA_indInd/$chr.passed.indInd.pca.eigenvec.labeled"; done > rename.sh
+```
 
 
 
 
+## Do window based PI and TajimaD for reagions with high LR in SweepFinder2
 
-### Do window based PI and TajimaD for reagions with high LR in SweepFinder2
-
-## window = 100kb; step = 1000bp; coordinate of the interval = middle of the 10kb interval
-
+### window = 100kb; step = 1000bp; coordinate of the interval = middle of the 10kb interval
+```
 for db in indInd vidCha vidMac; \
 do \
 
@@ -88,23 +74,23 @@ do \
  renameToHLscaffolds.py -c 1 -a PopGen_${db}/high_SF2.$db.slide.TajimaD -d <(awk '{print$2","$0}' PopGen_${db}/chrom.scaffold.dict.tsv) |  awk '{$3=$3+($4-$3)/2; print }' > file; mv file PopGen_${db}/high_SF2.$db.slide.TajimaD; \
 
 done
-
+```
 
 ###############################
 
-### OXPHOS genes analysis ####
+## OXPHOS genes analysis ####
 
-# 1) make OXPHOS_gene_list.bed
-# 2) sshD. HLtaeGut5/TOGA/
-# 3) 
+1) make OXPHOS_gene_list.bed
+2) sshD. HLtaeGut5/TOGA/
+3) 
 
+```
 LIST=autosomal_control_gene_list
 LIST=OXPHOS_gene_list
 
 for g in $(cut -f4 $LIST.bed); do line=$(grep -w $g $LIST.bed); for t in $(grep -w $g toga.isoforms.tsv | cut -f2); do echo -e "$t\t$line"; done ; done > $LIST.tsv
 
 for db in HLvidMac2 HLvidCha2 HLanoImb2; do for t in $(cut -f1 autosomal_control_gene_list.tsv); do grep -w $t vs_${db}/orthology_classification.tsv |  cut -f4,5 | awk -v var=$db '{print var"\t"$0}' ; done; done > file
-
 
 for db in vidMac vidCha anoImb indInd molAte agePho; do grep $db all_bp.oxphos.toga_ncbi.tsv | cut -f2- > MK_test_${db}_ncbi/oxphos.toga_ncbi.tsv; done
 
@@ -114,15 +100,19 @@ for db in vidMac vidCha anoImb indInd molAte agePho; do awk -v var=$db '{print v
 
 # prepare table to run ABC-MKT
 for db in vidMac vidCha anoImb; do for g in $(cut -f4 autosomal_control_gene_list.bed); do grep -w $g MK_test_${db}_ncbi/extended.af.gene.longest.mk.tsv | awk 'BEGIN {FS="\t"; OFS="\t"} {print $1,$5,","$3,$6,","$4,$7,$8}' | sed 's/|/,/g'; done > MK_test_${db}_ncbi/for_abc.gene.autosomal_control.tsv; done
-
+```
 
 
 
 #######################
 
-### SweepFinder2 peaks overlapping low PI: GO enrichement
-
- for db in vidMac vidCha indInd molAte agePho picPub anoImb; do echo $db; goenrich_genelist.R -w $WDIR -g PopGen_${db}/genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst -o  PopGen_${db}/SF2.go_enrich.1Mb_domain.tsv -u PopGen_${db}/genes.ncbi.lst; done
-
+## SweepFinder2 peaks overlapping low PI: GO enrichement
+```
+for db in vidMac vidCha indInd molAte agePho picPub anoImb; \
+do \
+	echo $db; \
+	goenrich_genelist.R -w $WDIR -g PopGen_${db}/genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst -o  PopGen_${db}/SF2.go_enrich.1Mb_domain.tsv -u PopGen_${db}/genes.ncbi.lst; \
+done
+```
 
 
