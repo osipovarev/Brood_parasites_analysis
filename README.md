@@ -13,7 +13,7 @@ python getFromOpenTree.py -j bp_birds_sci_names.json -c out.cites -t out.tre
 ### GSEA analysis of MK test results
 ```
 WDIR=$(pwd)
-for db in indInd vidCha vidMac; do cut -f1,17 MK_test_${db}_ncbi/extended.af.gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/impMKT/gene.dos.tsv; run_gsea_analysis.R -w $WDIR -g  MK_test_${db}_ncbi/impMKT/gene.dos.tsv  -o MK_test_${db}_ncbi/impMKT/gse.tsv -t MK_test_${db}_ncbi/extended.af.gene.longest.mk.tsv; done
+for db in indInd vidCha vidMac; do cut -f1,17 MK_test_${db}_ncbi/imp.gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/impMKT/gene.dos.tsv; run_gsea_analysis.R -w $(pwd) -g  MK_test_${db}_ncbi/impMKT/gene.dos.tsv  -o MK_test_${db}_ncbi/impMKT/gse.tsv -t MK_test_${db}_ncbi/imp.gene.longest.mk.tsv; done
 ```
 
 ### GO Enrichment analysis of MK test results
@@ -39,7 +39,12 @@ done
 
 ### make table for GO terms occuring at least in 2 clades
 ```
-for go in $(cat go_convergent_2clades.lst ); do description=$(grep -w $go MK_test_*_ncbi/pos.enrichGO.tsv | head -1 | cut -f1,2); vM=$(grep -w $go ./MK_test_vidMac_ncbi/pos.enrichGO.tsv | cut -f5); vC=$(grep -w $go ./MK_test_vidCha_ncbi/pos.enrichGO.tsv | cut -f5); iI=$(grep -w $go ./MK_test_indInd_ncbi/pos.enrichGO.tsv | cut -f5); echo -e "$description\t$vM\t$vC\t$iI"; done | awk -F":" '{print $2":"$3}' > go_convergent_2clades.tsv
+for db in vidMac vidCha anoImb poeAcu indInd picPub molAte agePho; do cut -f1 MK_test_${db}_ncbi/impMKT/pos.enrichGO.all_genes_BG.count3.tsv; done | g -v ID | s | uniq -c | awk '$1>1{print $2}' > go_convergent_2clades.v2.lst
+
+
+f=impMKT/pos.enrichGO.all_genes_BG.count3.tsv
+
+for go in $(cat go_convergent_2clades.v2.lst ); do description=$(grep -w $go MK_test_*_ncbi/$f | head -1 | cut -f1,2); all_pval=''; for db in vidMac vidCha anoImb poeAcu indInd picPub molAte agePho; do pval=$(grep -w $go MK_test_${db}_ncbi/$f | cut -f5); if [[ -z $pval ]]; then pval=NA; fi; all_pval=$all_pval" "$pval; done; echo -e "$description $all_pval"; done > go_convergent_2clades.v2.tsv
 ```
 
 
@@ -111,7 +116,7 @@ for db in vidMac vidCha anoImb; do for g in $(cut -f4 autosomal_control_gene_lis
 for db in vidMac vidCha indInd molAte agePho picPub anoImb; \
 do \
 	echo $db; \
-	goenrich_genelist.R -w $WDIR -g PopGen_${db}/genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst -o  PopGen_${db}/SF2.go_enrich.1Mb_domain.tsv -u PopGen_${db}/genes.ncbi.lst; \
+	goenrich_genelist.R -w $(pwd) -g PopGen_${db}/genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst -o  PopGen_${db}/SF2.go_enrich.1Mb_domain.tsv -u PopGen_${db}/genes.ncbi.lst; \
 done
 ```
 
