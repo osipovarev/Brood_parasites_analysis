@@ -44,7 +44,7 @@ for db in vidMac vidCha anoImb poeAcu indInd picPub molAte agePho; do cut -f1 MK
 
 f=impMKT/pos.enrichGO.all_genes_BG.count3.tsv
 
-for go in $(cat go_convergent_2clades.v2.lst ); do description=$(grep -w $go MK_test_*_ncbi/$f | head -1 | cut -f1,2); all_pval=''; for db in vidMac vidCha anoImb poeAcu indInd picPub molAte agePho; do pval=$(grep -w $go MK_test_${db}_ncbi/$f | cut -f5); if [[ -z $pval ]]; then pval=NA; fi; all_pval=$all_pval" "$pval; done; echo -e "$description $all_pval"; done > go_convergent_2clades.v2.tsv
+for go in $(cat go_convergent_2clades.v2.lst ); do description=$(grep -w $go MK_test_*_ncbi/$f | head -1 | cut -f1,2 | cut -d: -f2-); all_pval=''; for db in vidMac vidCha anoImb poeAcu indInd picPub molAte agePho; do pval=$(grep -w $go MK_test_${db}_ncbi/$f | cut -f5); if [[ -z $pval ]]; then pval=NA; fi; all_pval=$all_pval"\t"$pval; done; echo -e "$description\t$all_pval"; done > go_convergent_2clades.v2.tsv
 ```
 
 
