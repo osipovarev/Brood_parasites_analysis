@@ -1,0 +1,12 @@
+
+## get anoImb sequences
+for i in $(ls ND_alignments/ | cut -d_ -f1 | s -u); do echo $i; get_seq_by_name_fasta.py -n Aimb -f ND_alignments/${i}_aa.fasta; done > anoImb_mt_ND_models/nuclear_prot.anoImb.aa.fasta
+
+## map sites of interest onto structure
+map_sites_on_structure.py -p anoImb_mt_ND_models/anoImb.ND1.model.pdb -s 46,79,143,163,168,223,254,258,262,314,315 -f anoImb_mt_ND_models/anoImb.ND1.aa.fasta > anoImb_mt_ND_models/anoImb.ND1.model.BEB.pdb
+
+## PyMol
+select beb_nd1, resi 46+79+143+163+168+223+254+258+262+314+315 and anoImb.ND1.model.BEB
+select beb_nd3, resi 10+20+62+84+87+94 and anoImb.ND3.model
+select bebe_ndufs2, resi 29 and anoImb.NDUFS2.model 
+
