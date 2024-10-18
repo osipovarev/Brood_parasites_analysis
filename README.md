@@ -1,24 +1,32 @@
 
 ## Get the tree from OpenTree
+```
 source ~/.bash_profile
 source ~/.bashrc
 
 python getFromOpenTree.py -j bp_birds_sci_names.json -c out.cites -t out.tre
-
+```
 
 
 ## Filter and analize MK test results
+```
+DBS="vidCha vidMac anoImb indInd molAte poeAcu picPub agePho"
+```
 
 
 ### GSEA analysis of MK test results
 ```
 WDIR=$(pwd)
-for db in indInd vidCha vidMac; do cut -f1,17 MK_test_${db}_ncbi/imp.gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/impMKT/gene.dos.tsv; run_gsea_analysis.R -w $(pwd) -g  MK_test_${db}_ncbi/impMKT/gene.dos.tsv  -o MK_test_${db}_ncbi/impMKT/gse.tsv -t MK_test_${db}_ncbi/imp.gene.longest.mk.tsv; done
+for db in $DBS; \
+do \
+	cut -f1,17 MK_test_${db}_ncbi/imp.gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/impMKT/gene.dos.tsv; \
+	run_gsea_analysis.R -w $(pwd) -g  MK_test_${db}_ncbi/impMKT/gene.dos.tsv  -o MK_test_${db}_ncbi/impMKT/gse.tsv -t MK_test_${db}_ncbi/imp.gene.longest.mk.tsv; \
+done
 ```
 
-### GO Enrichment analysis of MK test results
+### GO Enrichment analysis of imputed MK test results
 ```
-for db in indInd vidCha vidMac; \
+for db in $DBS\
 do \
 	echo $db; \
 	run_goenrich_analysis.R -w $(pwd) -g  MK_test_${db}_ncbi/imp.gene.longest.mk.tsv -o MK_test_${db}_ncbi/impMKT/ -p 0.01; \
@@ -27,7 +35,7 @@ done
 
 ### GO enrich and GSEA for imputed MKT
 ```
-for db in vidCha vidMac agePho molAte picPub; \
+for db in $DBS; \
 do \
 	echo $db; \
 	cut -f1,12 MK_test_${db}_ncbi/imp.gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/impMKT/gene.dos.tsv; \
@@ -39,12 +47,29 @@ done
 
 ### make table for GO terms occuring at least in 2 clades
 ```
-for db in vidMac vidCha anoImb poeAcu indInd picPub molAte agePho; do cut -f1 MK_test_${db}_ncbi/impMKT/pos.enrichGO.all_genes_BG.count3.tsv; done | g -v ID | s | uniq -c | awk '$1>1{print $2}' > go_convergent_2clades.v2.lst
+for db in $DBS; \
+do \
+	cut -f1 MK_test_${db}_ncbi/impMKT/pos.enrichGO.all_genes_BG.count3.tsv; \
+done | g -v ID | s | uniq -c | awk '$1>1{print $2}' > go_convergent_2clades.v2.lst
 
 
 f=impMKT/pos.enrichGO.all_genes_BG.count3.tsv
 
-for go in $(cat go_convergent_2clades.v2.lst ); do description=$(grep -w $go MK_test_*_ncbi/$f | head -1 | cut -f1,2 | cut -d: -f2-); all_pval=''; for db in vidMac vidCha anoImb poeAcu indInd picPub molAte agePho; do pval=$(grep -w $go MK_test_${db}_ncbi/$f | cut -f5); if [[ -z $pval ]]; then pval=NA; fi; all_pval=$all_pval"\t"$pval; done; echo -e "$description\t$all_pval"; done > go_convergent_2clades.v2.tsv
+for go in $(cat go_convergent_2clades.v2.lst ); \
+do \
+	description=$(grep -w $go MK_test_*_ncbi/$f | head -1 | cut -f1,2 | cut -d: -f2-); \
+	all_pval=''; \
+	for db in $DBS; \
+	do \
+		pval=$(grep -w $go MK_test_${db}_ncbi/$f | cut -f5); \
+		if [[ -z $pval ]]; \
+		then \
+			pval=NA; \
+		fi; \
+		all_pval=$all_pval"\t"$pval; \
+	done; \
+	echo -e "$description\t$all_pval"; \
+done > go_convergent_2clades.v2.tsv
 ```
 
 
@@ -52,8 +77,12 @@ for go in $(cat go_convergent_2clades.v2.lst ); do description=$(grep -w $go MK_
 
 ## PCA honeyguide chr by chr
 ```
-for f in $(ls split_by_chr_PCA_indInd/*eigenvec); do renameToHLscaffolds.py -c 2 -a $f -d  <(awk '{print $1","$0}' snpArcher_QC/iInd.samples.dict) > $f.labeled; done
+for f in $(ls split_by_chr_PCA_indInd/*eigenvec); \
+do \
+	renameToHLscaffolds.py -c 2 -a $f -d  <(awk '{print $1","$0}' snpArcher_QC/iInd.samples.dict) > $f.labeled; \
+done
 ```
+
 ### rename scaffolds to chromosoms
 ```
 for f in $(ls split_by_chr_PCA_indInd/*passed.indInd.pca.eigenvec.labeled); do scaffold=$(echo $f | grep -Eo "CM0[0-9]{5}" );  chr=$(grep $scaffold chroms.sizes | cut -f1); echo -e "mv split_by_chr_PCA_indInd/$scaffold.passed.indInd.pca.eigenvec.labeled split_by_chr_PCA_indInd/$chr.passed.indInd.pca.eigenvec.labeled"; done > rename.sh
@@ -66,7 +95,7 @@ for f in $(ls split_by_chr_PCA_indInd/*passed.indInd.pca.eigenvec.labeled); do s
 
 ### window = 100kb; step = 1000bp; coordinate of the interval = middle of the 10kb interval
 ```
-for db in indInd vidCha vidMac; \
+for db in $DBS; \
 do \
 
  ## copy
@@ -113,7 +142,7 @@ for db in vidMac vidCha anoImb; do for g in $(cut -f4 autosomal_control_gene_lis
 
 ## SweepFinder2 peaks overlapping low PI: GO enrichement
 ```
-for db in vidMac vidCha indInd molAte agePho picPub anoImb; \
+for db in $DBS; \
 do \
 	echo $db; \
 	goenrich_genelist.R -w $(pwd) -g PopGen_${db}/genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst -o  PopGen_${db}/SF2.go_enrich.1Mb_domain.tsv -u PopGen_${db}/genes.ncbi.lst; \
