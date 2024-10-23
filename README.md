@@ -15,12 +15,39 @@ DBS="vidCha vidMac anoImb indInd molAte poeAcu picPub agePho"
 
 
 ### 1.1. GO Enrichment analysis of imputed MK test results
+NB: rename bird genes based on the association of chicken gene names with human gene names
 ```
+RENAMEDICT=~/Documents/LabDocs/Chicken_resources/galGal6_gene.hg38_gene_symbol.tsv
+
 for db in $DBS\
 do \
 	echo $db; \
-	run_goenrich_analysis.R -w $(pwd) -g  MK_test_${db}_ncbi/imp.gene.longest.mk.tsv -o MK_test_${db}_ncbi/impMKT/ -p 0.01; \
-	## add step to filter out Hit counts < 3:
+	
+	renameToHLscaffolds.py -c 1 -a MK_test_${db}_ncbi/imp.gene.longest.mk.tsv -d <(sed 's/\t/,/' $RENAMEDICT) | grep -v ^reg_ | grep -v ^LOC > MK_test_${db}_ncbi/hg38.imp.gene.longest.mk.tsv; \
+
+	run_goenrich_analysis.R -w $(pwd) -g  MK_test_${db}_ncbi/hg38.imp.gene.longest.mk.tsv -o MK_test_${db}_ncbi/impMKT/ -p 0.01; \
+done
+```
+
+
+### 1.1.1. Remove children GO terms
+```
+GOOBO=~/Documents/LabDocs/GO_terms_genes/go.obo
+
+ENRICH=pos.enrichGO.all_genes_BG.tsv
+c=1
+
+for db in $DBS; \
+do \
+	echo $db; \
+	WDIR=MK_test_${db}_ncbi/impMKT/
+	f=$WDIR/$ENRICH; \
+	golist=$(cut -f$c $f  | tail +2 | tr '\n' ',')
+
+	for g in $(cut -f$c $f | tail +2); \
+	do get_go_children.py -f $GOOBO -go $g -l $golist; done | grep "has parents" | awk '{print $1}' > to_exclude_go.lst; \
+	
+	filter_annotation_with_list.py -b -c $c -a $f -l to_exclude_go.lst > $WDIR/noChildren.$ENRICH; \
 done
 ```
 
@@ -81,6 +108,25 @@ done
 ```
 
 
+### 2.1. Remove children GO terms from the list of 3-way convergent terms
+```
+f=SF2.go_convergent_3clades.tsv
+c=2
+
+golist=$(cut -f$c $f  | tail +2 | tr '\n' ',')
+
+for g in $(cut -f$c $f | tail +2); \
+do \
+	get_go_children.py -f $GOOBO -go $g -l $golist; \
+done | grep "has parents" | awk '{print $1}' > to_exclude_go.lst
+```
+### use this list for plotting 3-way convergence! (see GO_enrichment_analysis.ipynb)
+
+
+### optional: get resulting table with no children GO terms
+```
+filter_annotation_with_list.py -b -c $c -a $f -l to_exclude_go.lst > noChildren.$f
+```
 
 
 
