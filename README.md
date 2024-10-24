@@ -14,7 +14,17 @@ DBS="vidCha vidMac anoImb indInd molAte poeAcu picPub agePho"
 ```
 
 
-### 1.1. GO Enrichment analysis of imputed MK test results
+### 1.1. Get lists of genes under positive selection p<0.01
+```
+for db in $DBS; \
+do \
+	echo $db; \
+	awk '($10<0.01 && $12>0){print $1}' MK_test_${db}_ncbi/imp.gene.longest.mk.tsv > MK_test_${db}_ncbi/impMKT/pos.genes.p0_01.lst; \
+done
+```
+
+
+### 1.2. GO Enrichment analysis of imputed MK test results
 NB: rename bird genes based on the association of chicken gene names with human gene names
 ```
 RENAMEDICT=~/Documents/LabDocs/Chicken_resources/galGal6_gene.hg38_gene_symbol.tsv
@@ -30,11 +40,12 @@ done
 ```
 
 
-### 1.1.1. Remove children GO terms
+### 1.2.1. Remove children GO terms
 ```
 GOOBO=~/Documents/LabDocs/GO_terms_genes/go.obo
-
-ENRICH=pos.enrichGO.all_genes_BG.tsv
+#DOS=pos
+DOS=neg
+ENRICH=$DOS.enrichGO.all_genes_BG.tsv
 c=1
 
 for db in $DBS; \
@@ -52,20 +63,19 @@ done
 ```
 
 
-### 1.2. GSEA analysis of imputed MK test results
+### 1.3. GSEA analysis of imputed MK test results
 ```
 for db in $DBS; \
 do \
 	echo $db; \
-	cut -f1,17 MK_test_${db}_ncbi/imp.gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > 
-	MK_test_${db}_ncbi/impMKT/gene.dos.tsv; \
+	cut -f1,12 MK_test_${db}_ncbi/imp.gene.longest.mk.tsv | grep -v -w NA | grep -v ^LOC | tail -n +2 > MK_test_${db}_ncbi/impMKT/gene.dos.tsv; \
 
 	run_gsea_analysis.R -w $(pwd) -g  MK_test_${db}_ncbi/impMKT/gene.dos.tsv  -o MK_test_${db}_ncbi/impMKT/gse.tsv -t MK_test_${db}_ncbi/imp.gene.longest.mk.tsv; \
 done
 ```
 
 
-### 1.3. Test convergence: make table for GO terms occuring at least in 2 clades
+### 1.4. Test convergence: make table for GO terms occuring at least in 2 clades
 ```
 for db in $DBS; \
 do \
@@ -99,11 +109,17 @@ done > go_convergent_2clades.v2.tsv
 #######################
 
 ## 2. SweepFinder2: overlap LR reaks with low PI: GO enrichement
+NB: rename bird genes based on the association of chicken gene names with human gene names
 ```
-for db in $DBS; \
+RENAMEDICT=~/Documents/LabDocs/Chicken_resources/galGal6_gene.hg38_gene_symbol.tsv
+
+for db in $DBS;\
 do \
 	echo $db; \
-	goenrich_genelist.R -w $(pwd) -g PopGen_${db}/genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst -o  PopGen_${db}/SF2.go_enrich.1Mb_domain.tsv -u PopGen_${db}/genes.ncbi.lst; \
+	
+	renameToHLscaffolds.py -c 1 -a PopGen_${db}/genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst -d <(sed 's/\t/,/' $RENAMEDICT) | grep -v ^reg_ | grep -v ^LOC > PopGen_${db}/hg38.genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst; \
+
+	goenrich_genelist.R -w $(pwd) -g PopGen_${db}/hg38.genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst -o  PopGen_${db}/SF2.go_enrich.1Mb_domain.tsv -u PopGen_${db}/genes.ncbi.lst; \
 done
 ```
 
