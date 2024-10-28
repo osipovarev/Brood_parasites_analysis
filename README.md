@@ -14,12 +14,13 @@ DBS="vidCha vidMac anoImb indInd molAte poeAcu picPub agePho"
 ```
 
 
-### 1.1. Get lists of genes under positive selection p<0.01
+### 1.1. Get lists of genes under positive selection & genes with DoS<0 (p<0.01)
 ```
 for db in $DBS; \
 do \
 	echo $db; \
 	awk '($10<0.01 && $12>0){print $1}' MK_test_${db}_ncbi/imp.gene.longest.mk.tsv > MK_test_${db}_ncbi/impMKT/pos.genes.p0_01.lst; \
+	awk '($10<0.01 && $12<0){print $1}' MK_test_${db}_ncbi/imp.gene.longest.mk.tsv > MK_test_${db}_ncbi/impMKT/neg.genes.p0_01.lst; \
 done
 ```
 
