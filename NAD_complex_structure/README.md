@@ -85,3 +85,12 @@ hide cartoon, !(ss H+S)
 
 select beb, b>0 and name ca
 ```
+
+## Run jupyter-notebook => extract shortest distances to each nuclear-encoded residue
+
+## Reverse residue numbering to the original order
+```
+renameToHLscaffolds.py -c 4 -a <(renameToHLscaffolds.py -c 1 -a distances_complex_I_anoImb.tsv -d <(awk '{print $1","$0}' renum_dict.complex_I_anoImb.tsv) ) -d <(awk '{print $1","$0}' renum_dict.complex_I_anoImb.tsv) > numbered_original.distances_complex_I_anoImb.tsv
+```
+
+
