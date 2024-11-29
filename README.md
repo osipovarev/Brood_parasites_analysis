@@ -121,12 +121,15 @@ do \
 	renameToHLscaffolds.py -c 1 -a PopGen_${db}/genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst -d <(sed 's/\t/,/' $RENAMEDICT) | grep -v ^reg_ | grep -v ^LOC > PopGen_${db}/hg38.genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst; \
 
 	goenrich_genelist.R -w $(pwd) -g PopGen_${db}/hg38.genes.SF2_peaks_low_PI_depth100.1Mb_domain.lst -o  PopGen_${db}/SF2.go_enrich.1Mb_domain.tsv -u PopGen_${db}/genes.ncbi.lst; \
+
+	cat PopGen_${db}/SF2.go_enrich.1Mb_domain.tsv | awk -F"\t" '$9>2 {print}' > PopGen_${db}/count3.SF2.go_enrich.1Mb_domain.tsv; \
 done
 ```
 
 
 ### 2.1. Remove children GO terms from the list of 3-way convergent terms
 ```
+GOOBO=~/Documents/LabDocs/GO_terms_genes/go.obo
 f=SF2.go_convergent_3clades.tsv
 c=2
 
@@ -136,15 +139,29 @@ for g in $(cut -f$c $f | tail +2); \
 do \
 	get_go_children.py -f $GOOBO -go $g -l $golist; \
 done | grep "has parents" | awk '{print $1}' > to_exclude_go.lst
+
+filter_annotation_with_list.py -b -c $c -a $f -l to_exclude_go.lst > noChildren.$f
 ```
 ### use this list for plotting 3-way convergence! (see GO_enrichment_analysis.ipynb)
 
 
-### optional: get resulting table with no children GO terms
-```
-filter_annotation_with_list.py -b -c $c -a $f -l to_exclude_go.lst > noChildren.$f
-```
 
+### 2.2. Remove children and GO terms with hit count <3 in each enrichment analsyis
+```
+for db in $DBS; \
+do \
+	echo $db; \
+	c=1; \
+	f=PopGen_${db}/count3.SF2.go_enrich.1Mb_domain.tsv; \
+	golist=$(cut -f$c $f  | tail +2 | tr '\n' ','); \
+
+	for g in $(cut -f$c $f | tail +2); 
+	do \
+		get_go_children.py -f $GOOBO -go $g -l $golist; \
+	done | grep "has parents" | awk '{print $1}' > to_exclude_go.lst; \
+	filter_annotation_with_list.py -b -c $c -a $f -l to_exclude_go.lst > noChildren.$db.count3.SF2.go_enrich.1Mb_domain.tsv; \
+done
+```
 
 
 ## Do window based PI and TajimaD for reagions with high LR in SweepFinder2
