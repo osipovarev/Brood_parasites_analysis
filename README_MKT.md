@@ -62,8 +62,8 @@ renameToHLscaffolds.py -d <(grep -v ^# $REPORT | awk '{print $7","$5}' | sed 's/
 
 ### 1.4. Add outgroups to the ingroup VCF
 
-#### Call variants from genome alignment recipe:
-[minimap2 source code and installation](https://github.com/lh3/minimap2/blob/master/cookbook.md#genome-aln)
+[Call variants from genome alignment recipe](https://github.com/lh3/minimap2/blob/master/cookbook.md#genome-aln))
+[minimap2 source code and installation](https://github.com/lh3/minimap2/tree/master)(
 
 
 #### Align agePho/ageTri (red-winged and tricolored blackbirds) to molAte brown-headed cowbird) with minimap2

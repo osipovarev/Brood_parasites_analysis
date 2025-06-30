@@ -1,19 +1,8 @@
 
-
-#########################################
-#                               		#
-##    2. Selective Seweeps analysis     ##
-#                               		#
-#########################################
+# 2. Selective Seweeps analysis     
 
 
-db=molAte
-BP=/n/holylfs05/LABS/informatics/Lab/project-eosipova/Brood_parasites/
-
-
-#####################################################
-
-### 2.1. Polarize VCF
+## 2.1. Polarize VCF
 ```
 db=molAte
 outdb=agePho
@@ -25,25 +14,27 @@ Q_VCF=$BP/$db/snpArcher_${db}/passed.${db}_full_raw.vcf.gz
 VCF_1OUT=passed_${db}.filt_${outdb}.vcf
 ```
 
-#### 0) make ancestral fasta from outgroup vcf
+### 2.1.0. make ancestral fasta from outgroup vcf
 ```
 conda activate broodp
 bcftools consensus $OUTGROUP -f $GENOME -o filt.$outdb.$db.from_minimap2.fa
 ```
 
-#### 1) make VCF with ONE outgroup;
+### 2.1.1. make VCF with ONE outgroup;
 NB: make an unzipped VCF! (the next script doesn't handle gzipped vcf well)
 ```
 bcftools merge --missing-to-ref $Q_VCF $OUTGROUP -O v -o $VCF_1OUT
 ```
 
-#### 2) infer ancestral allele
+### 2.1.2. infer ancestral allele
 ```
 conda activate vcfdo
 vcfdo polarize -i $VCF_1OUT -f filt.$outdb.$db.from_minimap2.fa > polarized.$VCF_1OUT
 ```
 
-#### split large chroms into chunks (2Mb)
+## 2.2. SweepFinder2
+
+### 2.2.1. split large chroms into chunks (2Mb)
 ```
 cd $BP/$db/Genome/
 
@@ -52,7 +43,7 @@ awk '{print $1"\t1\t"$2}' chrom.sizes > chrom.sizes.bed
 awk -v size=$s 'BEGIN{OFS="\t"}{split($3,a,";"); for(i=$2; i<=$3; i+=size) {if (i+size-1 <= $3) print $1, i, (i+size-1); else print $1, i, $3}}' chrom.sizes.bed > split_2Mb.chrom.bed
 ```
 
-#### prepare input for SweepFinder
+### 2.2.2. prepare input for SweepFinder
 ```
 VCF=$BP/$db/PopGen/polarized.passed_poeAcu.filt_vidMac.vcf.gz
 CHROMS=$BP/$db/Genome/split_2Mb.chrom.bed
@@ -72,7 +63,7 @@ bash jobs.vcftools
 ```
 
 
-#### remove polarized sites with 0 frequency; add header
+### 2.2.3. remove polarized sites with 0 frequency; add header
 ```
 for C in $(awk '{print $1":"$2"-"$3}' $CHROMS ); \
 do \
@@ -81,7 +72,7 @@ do \
 done
 ```
 
-#### prepare jobs SF2 no rec map
+### 2.2.4. prepare jobs SF2 no rec map
 ```
 for C in $(awk '{print $1":"$2"-"$3}' $CHROMS ); \
 do \
@@ -93,7 +84,7 @@ bash jobs.sweepfinder.norecmap
 ```
 
 
-#### prepare rec map files
+### 2.2.5. prepare rec map files
 ```
 RECMAP=$BP/Recombination_maps/all_chrom.recombination_map.$db.bed.gz
 
@@ -110,7 +101,7 @@ bash jobs.recomb_map
 ```
 
 
-#### prepare jobs SF2 with rec map
+### 2.2.6. prepare jobs SF2 with rec map
 ```
 for C in $(awk '{print $1":"$2"-"$3}' $CHROMS ); \
 do \
@@ -122,8 +113,13 @@ bash jobs.sweepfinder
 ```
 
 
-### 2. SweepFinder2: overlap LR reaks with low PI: GO enrichement
+## 2.3. Analyze SweepFinder2 results:
+### 2.3.1) overlap LR reaks with low PI
+### 2.3.2) GO enrichement
+(both steps below)
+
 NB: rename bird genes based on the association of chicken gene names with human gene names
+
 ```
 RENAMEDICT=~/Documents/LabDocs/Chicken_resources/galGal6_gene.hg38_gene_symbol.tsv
 
@@ -140,7 +136,7 @@ done
 ```
 
 
-### 2.1. Remove children GO terms from the list of 3-way convergent terms
+### 2.3.3. Remove children GO terms from the list of 3-way convergent terms
 ```
 GOOBO=~/Documents/LabDocs/GO_terms_genes/go.obo
 f=SF2.go_convergent_3clades.tsv
@@ -155,11 +151,11 @@ done | grep "has parents" | awk '{print $1}' > to_exclude_go.lst
 
 filter_annotation_with_list.py -b -c $c -a $f -l to_exclude_go.lst > noChildren.$f
 ```
-### use this list for plotting 3-way convergence! (see GO_enrichment_analysis.ipynb)
+#### use this list for plotting 3-way convergence! (see GO_enrichment_analysis.ipynb)
 
 
 
-### 2.2. Remove children and GO terms with hit count <3 in each enrichment analsyis
+### 2.3.4. Remove children and GO terms with hit count <3 in each enrichment analsyis
 ```
 for db in $DBS; \
 do \
@@ -177,9 +173,9 @@ done
 ```
 
 
-## Do window based PI and TajimaD for reagions with high LR in SweepFinder2
+## 2.4. Do window based PI and TajimaD for reagions with high LR in SweepFinder2
 
-### window = 100kb; step = 1000bp; coordinate of the interval = middle of the 10kb interval
+#### window = 100kb; step = 1000bp; coordinate of the interval = middle of the 10kb interval
 ```
 for db in $DBS; \
 do \
