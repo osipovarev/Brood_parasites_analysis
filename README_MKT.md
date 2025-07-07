@@ -34,7 +34,7 @@ snakemake --cores 1 --profile ../profiles/slurm --configfile config/config.molAt
 ```
 VCF=${db}_full_raw.vcf.gz
 
-bcftools view -f .,PASS $VCF -a -U -O u | bcftools view -v snps -m2 -M2 -e 'F_MISSING > 0.75 | AF=1.0 | ref="N" | ALT="." | TYPE~"indel"' -O z -o passed.$VCF
+bcftools view -f .,PASS $VCF -a -U -O u | bcftools view -v snps -m2 -M2 -e 'F_MISSING > 0.75 | ref="N" | ALT="." | TYPE~"indel"' -O z -o passed.$VCF
 ```
 
 
