@@ -117,6 +117,7 @@ Run [jupyter-notebook](https://github.com/osipovarev/Brood_parasites_analysis/bl
 ```
 renameToHLscaffolds.py -c 4 -a <(renameToHLscaffolds.py -c 1 -a distances_complex_I_anoImb.tsv -d <(awk '{print $1","$0}' renum_dict.complex_I_anoImb.tsv) ) -d <(awk '{print $1","$0}' renum_dict.complex_I_anoImb.tsv) > numbered_original.distances_complex_I_anoImb.tsv
 ```
+`renameToHLscaffolds.py` script can be found [here](https://github.com/osipovarev/general_file_tools/blob/05941edeeb86be9ba0c5465a9540a7197aee4cc6/renameToHLscaffolds.py)
 
 
 
