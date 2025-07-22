@@ -12,6 +12,7 @@ do \
 	get_seq_by_name_fasta.py -n Aimb -f ND_alignments/${i}_aa.fasta | sed 's/Aimb/Aimb_long/'  > anoImb_mt_ND_models/anoImb.$i.aa.fasta; \
 done
 ```
+get_seq_by_name_fasta.py script can be found [here](https://github.com/osipovarev/fasta_tools/blob/main/get_seq_by_name_fasta.py)
 
 
 ### 1.2. get anoImb MT sequences
@@ -21,6 +22,7 @@ do \
 	get_seq_by_name_fasta.py -n Aimb_genome -f mt_alignments/${i}_35tax_aa.fasta  | sed 's/Aimb_genome/Aimb_long/' > anoImb_mt_ND_models/anoImb.$i.aa.fasta; \
 done
 ```
+
 
 
 ## 2. Get sites unique in cuckoo finches
@@ -39,6 +41,8 @@ do \
 	echo -e "$i$sites";  \
 done | tr ' ' '\t'  >> ND_genes_Aimb.variable_sites.tsv
 ```
+get_variable_sites_msa.py script can be found [here](https://github.com/osipovarev/msa_tools/blob/main/get_variable_sites_msa.py)
+
 
 
 ## 3. Get sites that are variable in general
