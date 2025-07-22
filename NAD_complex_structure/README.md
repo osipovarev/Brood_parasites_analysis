@@ -99,7 +99,7 @@ done > load_and_align_all_ddN_NDs.pml
 ```
 
 ### 7.2. Run the script in PyMol
-=> saved aligned structures
+=> saved aligned structures as [renum.complex_I_anoImb_M_N_ddN.pdb](https://github.com/osipovarev/Brood_parasites_analysis/blob/main/NAD_complex_structure/renum.complex_I_anoImb_M_N_ddN.pdb)
 
 
 
@@ -115,6 +115,9 @@ renameToHLscaffolds.py -c 4 -a <(renameToHLscaffolds.py -c 1 -a distances_comple
 ```
 
 
+
 ## 10. Visualize structure in ChimeraX
 used [custom_color_resi.pml](https://github.com/osipovarev/Brood_parasites_analysis/blob/main/NAD_complex_structure/custom_color_resi.pml) script to color the resulting structures in ChimeraX.
+
+the [ChimeraX session with the structure](https://github.com/osipovarev/Brood_parasites_analysis/blob/main/NAD_complex_structure/NAD_CF_all_CF1_surface_mt.cxs)
 
