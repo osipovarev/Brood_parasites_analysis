@@ -1,17 +1,27 @@
+# This pipeline describes structure analysis of the cuckoo finch respiratory complex I
 
-## get anoImb nuclear sequences
+
+## 1. Get cucko finch sequences
+
+### 1.1. get anoImb nuclear sequences
 ```
-for i in $(ls ND_alignments/ | cut -d_ -f1 | sort -u); do get_seq_by_name_fasta.py -n Aimb -f ND_alignments/${i}_aa.fasta | sed 's/Aimb/Aimb_long/'  > anoImb_mt_ND_models/anoImb.$i.aa.fasta; done
+for i in $(ls ND_alignments/ | cut -d_ -f1 | sort -u); \
+do \
+	get_seq_by_name_fasta.py -n Aimb -f ND_alignments/${i}_aa.fasta | sed 's/Aimb/Aimb_long/'  > anoImb_mt_ND_models/anoImb.$i.aa.fasta; \
+done
 ```
 
 
-## get anoImb MT sequences
+### 1.2. get anoImb MT sequences
 ```
-for i in $(ls mt_alignments/ | cut -d_ -f1 | sort -u); do get_seq_by_name_fasta.py -n Aimb_genome -f mt_alignments/${i}_35tax_aa.fasta  | sed 's/Aimb_genome/Aimb_long/'  > anoImb_mt_ND_models/anoImb.$i.aa.fasta; done
+for i in $(ls mt_alignments/ | cut -d_ -f1 | sort -u); \
+do \
+	get_seq_by_name_fasta.py -n Aimb_genome -f mt_alignments/${i}_35tax_aa.fasta  | sed 's/Aimb_genome/Aimb_long/' > anoImb_mt_ND_models/anoImb.$i.aa.fasta; \
+done
 ```
 
 
-## Get sites unique in cuckoo finches
+## 2. Get sites unique in cuckoo finches
 ```
 for i in $(ls ND_alignments/ | cut -d_ -f1 | sort -u); \
 do \
@@ -29,7 +39,7 @@ done | tr ' ' '\t'  >> ND_genes_Aimb.variable_sites.tsv
 ```
 
 
-## Get sites that are variable in general
+## 3. Get sites that are variable in general
 ```
 DBS=Apho,Mate,Scan,Tgut,Lstr,Vmac,Vcha,Aimb
 
@@ -42,7 +52,12 @@ done | tr ' ' '\t' >  ND_genes.variable_sites.tsv
 ```
 
 
-## map sites of interest onto models
+## 4. Model cuckoo finch respiratory complex I subunits from sequences
+go to https://swissmodel.expasy.org/interactive
+and submit sequences of all subunits one by one.
+Download resulting pdb models.
+
+## 5. Optional (for PyMol only): map sites of interest onto models
 ```
 #VARIABLE=ND_genes_Aimb.variable_sites.tsv
 VARIABLE=ND_genes.variable_sites.tsv
@@ -59,7 +74,7 @@ done
 ```
 
 
-## color models by delta dN (repalce B-factor with delta dN values)
+## 6. Optional (for PyMol only): color models by delta dN (repalce B-factor with delta dN values)
 ```
 for g in $(ls anoImb_mt_ND_models/*pdb | cut -d/ -f2 | cut -d. -f2 | sort -u); \
 do \
@@ -70,7 +85,10 @@ done
 ```
 
 
-## write pymol script
+
+## 7. Load and align models with PyMol
+
+### 7.1. write pymol script
 ```
 for g in $(ls anoImb_mt_ND_models/*pdb | cut -d/ -f2 | cut -d. -f2 | sort -u | g ^ND); \
 do \
@@ -78,25 +96,18 @@ do \
 done > load_and_align_all_NDs.pml
 ```
 
+### 7.2. Run the script in PyMol
+=> save aligned structures
 
 
 
-## PyMol
-```
-select beb_nd1, resi 46+79+143+163+168+223+254+258+262+314+315 and anoImb.ND1.model.BEB
-select beb_nd3, resi 10+20+62+84+87+94 and anoImb.ND3.model
-select bebe_ndufs2, resi 29 and anoImb.NDUFS2.model 
+## 8. Compute distance matrix between all mt-encoded residues to nuclear-encoded resudies
+Run [jupyter-notebook](https://github.com/osipovarev/Brood_parasites_analysis/blob/main/NAD_complex_analysis.ipynb) 
+=> extract shortest distances to each nuclear-encoded residue
 
-bg_color white
-spectrum b, blue_white_red, minimum=-5, maximum=5
-hide cartoon, !(ss H+S)
 
-select beb, b>0 and name ca
-```
 
-## Run jupyter-notebook => extract shortest distances to each nuclear-encoded residue
-
-## Reverse residue numbering to the original order
+## 9. Reverse residue numbering to the original order
 ```
 renameToHLscaffolds.py -c 4 -a <(renameToHLscaffolds.py -c 1 -a distances_complex_I_anoImb.tsv -d <(awk '{print $1","$0}' renum_dict.complex_I_anoImb.tsv) ) -d <(awk '{print $1","$0}' renum_dict.complex_I_anoImb.tsv) > numbered_original.distances_complex_I_anoImb.tsv
 ```
