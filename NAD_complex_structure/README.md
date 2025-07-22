@@ -1,5 +1,7 @@
-# This pipeline describes structure analysis of the cuckoo finch respiratory complex I
+# Structural analysis cuckoo finch respiratory complex I
 
+This pipeline describes structural analysis of the cuckoo finch respiratory complex I
+for Sorenson et al manuscript: "Accelerated sex chromosome degeneration and mitonuclear coevolution in a brood parasitic bird"
 
 ## 1. Get cucko finch sequences
 
