@@ -1,7 +1,7 @@
 # Structural analysis cuckoo finch respiratory complex I
 
 This pipeline describes structural analysis of the cuckoo finch respiratory complex I
-for Sorenson et al manuscript: "Accelerated sex chromosome degeneration and mitonuclear coevolution in a brood parasitic bird"
+for Sorenson et al. manuscript: "*Accelerated sex chromosome degeneration and mitonuclear coevolution in a brood parasitic bird*"
 
 ## 1. Get cucko finch sequences
 
@@ -55,9 +55,9 @@ done | tr ' ' '\t' >  ND_genes.variable_sites.tsv
 
 
 ## 4. Model cuckoo finch respiratory complex I subunits from sequences
-go to https://swissmodel.expasy.org/interactive
-and submit sequences of all subunits one by one.
-Download resulting pdb models.
+used https://swissmodel.expasy.org/interactive
+and submited sequences of all subunits one by one.
+Downloaded resulting pdb models.
 
 ## 5. Optional (for PyMol only): map sites of interest onto models
 ```
@@ -95,11 +95,11 @@ done
 for g in $(ls anoImb_mt_ND_models/*pdb | cut -d/ -f2 | cut -d. -f2 | sort -u | g ^ND); \
 do \
 	echo "load anoImb_mt_ND_models/anoImb.$g.model.ddN.pdb"; echo "align anoImb.$g.model.ddN, 5lnk "; \
-done > load_and_align_all_NDs.pml
+done > load_and_align_all_ddN_NDs.pml
 ```
 
 ### 7.2. Run the script in PyMol
-=> save aligned structures
+=> saved aligned structures
 
 
 
@@ -114,4 +114,7 @@ Run [jupyter-notebook](https://github.com/osipovarev/Brood_parasites_analysis/bl
 renameToHLscaffolds.py -c 4 -a <(renameToHLscaffolds.py -c 1 -a distances_complex_I_anoImb.tsv -d <(awk '{print $1","$0}' renum_dict.complex_I_anoImb.tsv) ) -d <(awk '{print $1","$0}' renum_dict.complex_I_anoImb.tsv) > numbered_original.distances_complex_I_anoImb.tsv
 ```
 
+
+## 10. Visualize structure in ChimeraX
+used [custom_color_resi.pml](https://github.com/osipovarev/Brood_parasites_analysis/blob/main/NAD_complex_structure/custom_color_resi.pml) script to color the resulting structures in ChimeraX.
 
