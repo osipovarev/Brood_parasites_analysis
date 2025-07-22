@@ -85,6 +85,7 @@ do \
 	awk -v var=$b '{if ($1 == "ATOM" || $1 == "HETATM") printf "%-60s%6.2f%s\n", substr($0, 1, 60), var, substr($0, 67); else print $0}' anoImb_mt_ND_models/anoImb.$g.model.pdb > anoImb_mt_ND_models/anoImb.$g.model.ddN.pdb; \
 done
 ```
+models for individual subunits are available on Dryad
 
 
 
@@ -99,8 +100,7 @@ done > load_and_align_all_ddN_NDs.pml
 ```
 
 ### 7.2. Run the script in PyMol
-=> saved aligned structures as [renum.complex_I_anoImb_M_N_ddN.pdb](https://github.com/osipovarev/Brood_parasites_analysis/blob/main/NAD_complex_structure/renum.complex_I_anoImb_M_N_ddN.pdb)
-
+=> saved aligned structures as renum.complex_I_anoImb_M_N_ddN.pdb (available on Dryad).
 
 
 ## 8. Compute distance matrix between all mt-encoded residues to nuclear-encoded resudies
@@ -119,5 +119,5 @@ renameToHLscaffolds.py -c 4 -a <(renameToHLscaffolds.py -c 1 -a distances_comple
 ## 10. Visualize structure in ChimeraX
 used [custom_color_resi.pml](https://github.com/osipovarev/Brood_parasites_analysis/blob/main/NAD_complex_structure/custom_color_resi.pml) script to color the resulting structures in ChimeraX.
 
-the [ChimeraX session with the structure](https://github.com/osipovarev/Brood_parasites_analysis/blob/main/NAD_complex_structure/NAD_CF_all_CF1_surface_mt.cxs)
+Saved the ChimeraX session with the structure as NAD_CF_all_CF1_surface_mt.cxs (available on Dryad)
 
