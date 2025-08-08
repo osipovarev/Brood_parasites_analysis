@@ -39,3 +39,4 @@ done
 
 
 ## 4. Plot length distribution
+see jupyter-notebook `GO_enrichment_analysis.ipynb`
