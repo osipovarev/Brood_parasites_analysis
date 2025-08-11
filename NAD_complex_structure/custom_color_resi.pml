@@ -1,34 +1,3 @@
-cd /Users/osipova/Documents/LabDocs/Brood_parasites_analysis/NAD_complex_structure
-load renum.renum.complex_I_anoImb_M_N_BEB.pdb
-
-bg_color white
-
-
-select M, chain M
-select N, chain N
-color light_blue, M
-color light_green, N
-
-select M_CF1, chain M and name CA and resi 46+79+143+163+168+223+262+314+315+339+390+405+478+556+567+666+670+733+844+845+934+957+966+984+994+1035+1062+1101+1162+1187+1225+1262+1291+1299+1302+1355+1394+1531+1552+1728+1743+1777+1795+1859+1865+1874+1889+1890+1894+1895+1938+1952+1969+2000+2078+2082
-
-select N_CF1, chain N and name CA and resi 56+154+163+184+196+211+262+271+392+425+439+765+825+982+984+992+998+1018+1021+1023+1025+1049+1112+1121+1466+1581+1721+1750+1785+1805+1839+1841+1842+1982+2234+2267+2313+2335+2339+2358+2370+2380+2383+2390+2554+2603+2607+2615+2632+2652+2703+2750+2769+2782+2840+2900+2913+2937+3021+3145+3147+3324+3346+3588+3605+3638+3688+3715+3735+3737+3739+3742+3749+3753+3775+4283+4317+4537+4982+5490+6568+6816+6922+6944+6962+7007+7018+7113
-
-show spheres, M_CF1
-color deepblue, M_CF1
-show spheres, N_CF1
-color darker_green, N_CF1
-
-##
-set ray_shadows, 1     
-set ray_opaque_background, 0  
-set antialias, 2
-
-set cartoon_transparency, 0.2
-set cartoon_fancy_helices, 1
-set cartoon_smooth_loops, 1
-
-png NAD_M_N_zoom_out.png, dpi=600
-
 
 
 ______________________________________________
@@ -36,7 +5,7 @@ ______________________________________________
 
 # Change directory and load the PDB file
 cd /Users/osipova/Documents/LabDocs/Brood_parasites_analysis/NAD_complex_structure
-open renum.renum.complex_I_anoImb_M_N_BEB.pdb
+open renum.complex_I_anoImb_M_N_ddN.pdb
 
 # Set background color to white
 #set bgColor white
