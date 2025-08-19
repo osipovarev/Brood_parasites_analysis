@@ -125,7 +125,8 @@ renameToHLscaffolds.py -c 4 -a <(renameToHLscaffolds.py -c 1 -a distances_comple
 used [custom_color_resi.md](https://github.com/osipovarev/Brood_parasites_analysis/blob/main/NAD_complex_structure/custom_color_resi.md) README to color the resulting structures in ChimeraX.
 
 Saved the ChimeraX session with the structure as:
-NAD_CF_all_CF1_surface_mt_and_nucl.cxs - with cuckoo finch changes
-NAD_Vid_all_Vid1_surface_mt_and_nucl.cxs - with Vidua chabges
+- NAD_CF_all_CF1_surface_mt_and_nucl.cxs - with cuckoo finch changes
+- NAD_Vid_all_Vid1_surface_mt_and_nucl.cxs - with Vidua chabges
+
 (both available on Dryad)
 
