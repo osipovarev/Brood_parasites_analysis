@@ -126,7 +126,7 @@ used [custom_color_resi.md](https://github.com/osipovarev/Brood_parasites_analys
 
 Saved the ChimeraX session with the structure as:
 - `NAD_CF_all_CF1_surface_mt_and_nucl.cxs` - with cuckoo finch changes
-- `NAD_Vid_all_Vid1_surface_mt_and_nucl.cxs` - with Vidua chabges
+- `NAD_Vid_all_Vid1_surface_mt_and_nucl.cxs` - with Vidua changes
 
 (both available on Dryad)
 
