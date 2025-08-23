@@ -51,7 +51,7 @@ select /M:6,23,40,46,79,83,98,143,161,163,166,167,168,178,179,223,243,246,254,25
 name frozen CF_all_M sel
 
 color CF_all_M mid_blue
-show (CF_all_M-residues & backbone) target ab
+show (CF_all_M & backbone) target ab
 style CF_all_M sphere
 ```
 
@@ -62,7 +62,7 @@ select /M:46,79,143,163,168,223,262,314,315,339,390,405,478,556,567,666,670,733,
 name frozen CF1_M sel
 
 color CF1_M dark_blue
-show (CF1_M-residues & backbone) target ab
+show (CF1_M & backbone) target ab
 style CF1_M sphere
 ```
 
@@ -150,12 +150,12 @@ transparency 70 cartoon
 select /N:5809,5817,5836,5854,5856,5858,5860,5862,5863,5870,5896
 name frozen NDUFC2 sel
 color NDUFC2 dark_green
-show (#!1.33 & sel-residues & sidechain) target ab
+show (#!1.33 & sel & sidechain) target ab
 
 select /M:666,659,646,670,669,669,1035
 name frozen mNDUFC2 sel
 color mNDUFC2 dark_blue
-show (#!1.33 & sel-residues & sidechain) target ab
+show (#!1.33 & sel & sidechain) target ab
 
 
 size stickRadius 0.23
@@ -187,7 +187,7 @@ select /M:6,8,13,14,40,80,83,87,94,109,112,159,161,171,179,246,256,257,265,280,3
 
 name frozen mV_all sel
 color mV_all mid_blue
-show (sel-residues & ((protein&@ca)|(nucleic&@p))) target ab
+show (sel & ((protein&@ca)|(nucleic&@p))) target ab
 
 select /M:87,159,171,346,422,444,448,471,476,543,553,626,674,678,704,887,893,958,982,983,1156,1305,1335,1343,1410,1530,1538,1562,1618,1804,1811,1960,1989,2091@CA
 
