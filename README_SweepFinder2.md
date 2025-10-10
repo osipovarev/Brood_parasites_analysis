@@ -193,6 +193,8 @@ done
 ```
 
 
+### SweepFinder2 visualization
+Further analysis and visualization can be found in this [jupyter-notebook](https://github.com/osipovarev/Brood_parasites_analysis/blob/main/selective_sweeps_analysis.ipynb)
 
 
 

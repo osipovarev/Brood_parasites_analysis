@@ -236,3 +236,7 @@ do \
 done > go_convergent_2clades.v2.tsv
 ```
 
+### MKT visualization
+Further analysis and visualization can be found in this [jupyter-notebook](https://github.com/osipovarev/Brood_parasites_analysis/blob/main/mk_test_analysis.ipynb)
+
+
